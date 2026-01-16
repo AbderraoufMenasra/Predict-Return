@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prédiction de Retours de Produits</title>
+    <link rel="stylesheet" href="../static/css/style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Header Principal -->
+    <header class="main-header">
+        <div class="container">
+            <h1><i class="fas fa-box"></i> Prédiction de Retours de Produits</h1>
+            <p>Application intelligente pour estimer la probabilité de retour des commandes clients</p>
+        </div>
+    </header>
+
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="#accueil" class="nav-link active" data-page="accueil">
+                        <i class="fas fa-home"></i> Accueil
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#predictions" class="nav-link" data-page="predictions">
+                        <i class="fas fa-chart-line"></i> Estimer la probabilité de retour d'un produit
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Contenu Principal -->
+    <main class="main-content">
+        <div class="container">
+            
+            <!-- Page Accueil -->
+            <section id="accueil" class="page-content active">
+                <div class="info-box">
+                    <h2><i class="fas fa-bullseye"></i> Objectif de l'application</h2>
+                    <p>Cette application utilise l'intelligence artificielle pour prédire si un produit sera retourné 
+                    à partir d'un fichier Excel contenant les données de commandes.</p>
+                </div>
+
+                <div class="schema-section">
+                    <h3><i class="fas fa-table"></i> Schéma de données requis</h3>
+                    <p>Votre fichier Excel/CSV doit contenir exactement les colonnes suivantes :</p>
+                    <div class="schema-grid">
+                        <div class="schema-item">
+                            <strong>id_commande</strong>
+                            <span>Identifiant unique de la commande (entier)</span>
+                        </div>
+                        <div class="schema-item">
+                            <strong>id_client</strong>
+                            <span>Identifiant du client (entier)</span>
+                        </div>
+                        <div class="schema-item">
+                            <strong>id_produit</strong>
+                            <span>Identifiant du produit (entier)</span>
+                        </div>
+                        <div class="schema-item">
+                            <strong>prix</strong>
+                            <span>Prix du produit (nombre décimal)</span>
+                        </div>
+                        <div class="schema-item">
+                            <strong>catégorie</strong>
+                            <span>Catégorie du produit (texte)</span>
+                        </div>
+                        <div class="schema-item">
+                            <strong>note_client</strong>
+                            <span>Note client (nombre décimal, peut être vide)</span>
+                        </div>
+                        <div class="schema-item">
+                            <strong>retour</strong>
+                            <span>Indicateur de retour (1 si retourné, 0 sinon)</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="workflow-section">
+                    <h3><i class="fas fa-rocket"></i> Comment ça marche ?</h3>
+                    <div class="workflow-steps">
+                        <div class="step">
+                            <div class="step-number">1</div>
+                            <div class="step-content">
+                                <h4>Téléchargez votre fichier</h4>
+                                <p>Excel (.xlsx) ou CSV (.csv)</p>
+                            </div>
+                        </div>
+                        <div class="step">
+                            <div class="step-number">2</div>
+                            <div class="step-content">
+                                <h4>Validation automatique</h4>
+                                <p>Vérification du format des données</p>
+                            </div>
+                        </div>
+                        <div class="step">
+                            <div class="step-number">3</div>
+                            <div class="step-content">
+                                <h4>Analyse IA</h4>
+                                <p>Le modèle ML analyse les données</p>
+                            </div>
+                        </div>
+                        <div class="step">
+                            <div class="step-number">4</div>
+                            <div class="step-content">
+                                <h4>Estimation</h4>
+                                <p>Estimez la probabilité de retour d'un produit</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="upload-section">
+                    <h3><i class="fas fa-upload"></i> Commencez par télécharger votre fichier</h3>
+                    <div class="upload-area" id="uploadArea">
+                        <div class="upload-content">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                            <h4>Glissez-déposez votre fichier ici</h4>
+                            <p>ou</p>
+                            <button class="btn btn-primary" onclick="document.getElementById('fileInput').click()">
+                                Choisissez un fichier
+                            </button>
+                            <input type="file" id="fileInput" accept=".xlsx,.csv" style="display: none;">
+                            <p class="file-types">Formats supportés : .xlsx, .csv</p>
+                        </div>
+                    </div>
+                    <div id="fileInfo" class="file-info" style="display: none;">
+                        <div class="file-details">
+                            <i class="fas fa-file-excel"></i>
+                            <span id="fileName"></span>
+                            <button class="btn btn-small btn-danger" onclick="removeFile()">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Page Prédictions -->
+            <section id="predictions" class="page-content">
+                <h2><i class="fas fa-chart-line"></i> Estimer la probabilité de retour d'un produit</h2>
+                
+                <div id="predictionsPrompt" class="upload-prompt">
+                    <div class="info-box">
+                        <h3><i class="fas fa-info-circle"></i> Veuillez d'abord télécharger et analyser un fichier</h3>
+                        <p>Retournez à la page d'accueil pour télécharger votre fichier Excel/CSV.</p>
+                        <button class="btn btn-primary" onclick="showPage('accueil')">
+                            <i class="fas fa-arrow-left"></i> Retour à l'accueil
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Formulaire de prédiction individuelle -->
+                <div id="singlePredictionForm" class="prediction-form" style="display: none;">
+                    <div class="info-box">
+                        <h3><i class="fas fa-magic"></i> Prédire la probabilité de retour d'un produit</h3>
+                        <p>Entrez les caractéristiques du produit pour prédire sa probabilité de retour basée sur l'historique.</p>
+                    </div>
+
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="categorie"><i class="fas fa-tag"></i> Catégorie du produit</label>
+                            <select id="categorie" name="categorie" required>
+                                <option value="">Sélectionnez une catégorie</option>
+                                <option value="Électronique">Électronique</option>
+                                <option value="Vêtements">Vêtements</option>
+                                <option value="Maison">Maison</option>
+                                <option value="Sports">Sports</option>
+                                <option value="Livres">Livres</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="prix"><i class="fas fa-euro-sign"></i> Prix (€)</label>
+                            <input type="number" id="prix" name="prix" step="0.01" min="0" placeholder="Ex: 29.99" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="note_client"><i class="fas fa-star"></i> Note client moyenne (optionnel)</label>
+                            <input type="number" id="note_client" name="note_client" step="0.1" min="1" max="5" placeholder="Ex: 4.2">
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button class="btn btn-primary" onclick="predictSingleProduct()">
+                            <i class="fas fa-magic"></i> Estimer la probabilité de retour
+                        </button>
+                    </div>
+
+                    <!-- Résultat de la prédiction -->
+                    <div id="singlePredictionResult" class="prediction-result" style="display: none;">
+                        <div class="result-box">
+                            <h3><i class="fas fa-chart-line"></i> Résultat de la prédiction</h3>
+                            <div class="probability-display">
+                                <div class="probability-circle">
+                                    <span id="probabilityValue">0%</span>
+                                </div>
+                                <div class="probability-details">
+                                    <p><strong>Probabilité de retour:</strong> <span id="probabilityText">0%</span></p>
+                                    <p><strong>Niveau de risque:</strong> <span id="riskLevel" class="risk-badge">-</span></p>
+                                    <p><strong>Prédiction:</strong> <span id="predictionText">-</span></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="predictionsContent" class="predictions-content" style="display: none;">
+                    <!-- Le contenu sera généré dynamiquement -->
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2026 Application de Prédiction de Retours. Tous droits réservés.</p>
+        </div>
+    </footer>
+
+    <!-- Modal pour les messages -->
+    <div id="messageModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <div id="modalMessage"></div>
+        </div>
+    </div>
+
+    <!-- Loading Spinner -->
+    <div id="loadingSpinner" class="loading-spinner" style="display: none;">
+        <div class="spinner"></div>
+        <p>Traitement en cours...</p>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>
